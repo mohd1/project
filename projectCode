@@ -1,0 +1,74 @@
+def CSVExtractList(fname,columns,skiprows,target):
+    """This function takes 4 arguments: CSV file name, the columns titles in the CSV file, the number of row to be skipped and 
+    the target column. It will return a list of the target column excluding the column's title
+    ARGS:
+        fname: the file name where the data is stored 
+        columns: a list of strings that are the column names that are in the file
+        skiprows: integer  that allows rows to be skipped before start extracting data you want to keep
+        target: a string that is the name of the column who's values you want returned
+    RETURNS:
+        A list of strings that are the values in the column that you select for target"""
+    
+    red = pandas.read_csv(fname, skiprows=skiprows, names=columns) 
+    
+    lis=list(red[target])
+    
+    return lis
+
+      
+
+
+fme='Student_Clean_Python.csv'
+
+# I am calling the CSVExtractList function to extract data by column
+School_Name=CSVExtractList(fme,Col_Name,skiprows=1,target='School')
+ele_teacher = CSVExtractList(fme,Col_Name,skiprows=1,target='ele_teacher')
+Mid_Teacher = CSVExtractList(fme,Col_Name,skiprows=1,target='Mid_Teacher')
+HS_Teacher = CSVExtractList(fme,Col_Name,skiprows=1,target='HS_Teacher')
+ESTeach_LS1= CSVExtractList(fme,Col_Name,skiprows=1,target='ESTeach_LS1')
+ssSch_Climate2  = CSVExtractList(fme,Col_Name,skiprows=1,target='ssSCH_Climate2')
+EsSch_Climate1      = CSVExtractList(fme,Col_Name,skiprows=1,target='EsSch_Climate1')
+ssTeach_LS1     = CSVExtractList(fme,Col_Name,skiprows=1,target='ssTeach_LS1')
+ID = CSVExtractList(fme,Col_Name,skiprows=1,target='ID')
+sch_type  = CSVExtractList(fme,Col_Name,skiprows=1,target='sch_type')
+
+
+fourthtable=zip(Mid_Teacher,  HS_Teacher,   ssTeach_LS1 )
+
+
+
+
+
+
+
+
+
+# now i am creating project database
+con = lite.connect('project.db')
+#create tables and insert values
+with con:
+    
+    cur = con.cursor()    
+    
+    cur.execute("DROP TABLE IF EXISTS School")
+    cur.execute("DROP TABLE IF EXISTS Elementary_Teacher")
+    cur.execute("DROP TABLE IF EXISTS Secondary_Teacher")
+    cur.execute("DROP TABLE IF EXISTS Student")
+    
+    cur.execute("CREATE TABLE School(School_Name TEXT,EsSch_Climate1 int, ssSch_Climate2 int)")
+    
+    cur.execute("CREATE TABLE Elementary_Teacher(ele_teacher TEXT, School_Name TEXT, EsTeach_LS1 int,\
+                FOREIGN KEY (School_Name) REFERENCES School(rowid))")
+    
+    cur.execute("CREATE TABLE Secondary_Teacher (Mid_Teacher TEXT, HS_Teacher TEXT, School_Name TEXT, ssTeach_LS1 int,\
+                FOREIGN KEY (School_Name) REFERENCES School(rowid))")
+    
+    cur.execute("CREATE TABLE Student (ID int,sch_type int, School_Name TEXT,\
+                FOREIGN KEY (School_Name) REFERENCES School(rowid))")
+    
+    cur.executemany("INSERT INTO School (School_Name,EsSch_Climate1,ssSch_Climate2) VALUES (?,?,?)", zip(School_Name,EsSch_Climate1,ssSch_Climate2))
+    
+    cur.executemany("INSERT INTO Elementary_Teacher	(ele_teacher, School_Name,  ESTeach_LS1 )	VALUES (?,?,?)",	zip(ele_teacher ,  School_Name , ESTeach_LS1  ))
+    #cur.executemany("INSERT INTO Secondary_Teacher	(Mid_Teacher,  HS_Teacher,  ssTeach_LS1 )	VALUES (?,?,?)",	fourthtable)
+    #cur.executemany("INSERT INTO Student (ID,sch_type)	VALUES (?,?)", secondtable)
+
