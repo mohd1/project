@@ -1,0 +1,16 @@
+def CSVExtractList(fname,columns,skiprows,target):
+    """This function takes 4 arguments: CSV file name, the columns titles in the CSV file, the number of row to be skipped and 
+    the target column. It will return a list of the target column excluding the column's title
+    ARGS:
+        fname: the file name where the data is stored 
+        columns: a list of strings that are the column names that are in the file
+        skiprows: integer  that allows rows to be skipped before start extracting data you want to keep
+        target: a string that is the name of the column who's values you want returned
+    RETURNS:
+        A list of strings that are the values in the column that you select for target"""
+    
+    red = pandas.read_csv(fname, skiprows=skiprows, names=columns) 
+    
+    lis=list(red[target])
+    
+    return lis
