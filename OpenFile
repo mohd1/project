@@ -1,0 +1,11 @@
+import Tkinter, tkFileDialog
+
+def uploadfile():
+    """This function takes nothing. It will open a new window to select a file from your computer and it will return the selected file
+    
+    RETURNS:
+        a file that is selected"""
+    root = Tkinter.Tk()
+    root.withdraw()
+    SelectFile = tkFileDialog.askopenfilename()
+    return SelectFile
